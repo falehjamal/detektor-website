@@ -1,0 +1,2 @@
+* download dan install NMAP : https://nmap.org/download.html
+* download dan install Python : https://www.python.org/downloads/
