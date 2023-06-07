@@ -13,6 +13,20 @@
 	<script src="node_modules/jquery/dist/jquery.js"></script>
 	<script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
 	<script src="node_modules/toastr/build/toastr.min.js"></script>
+
+    <style>
+        .shake {
+      animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+    </style>
     
 </head>
 <body class="bg-secondary">
@@ -32,9 +46,9 @@
                         </div>
                     </div>
                     <div class="row col-8 justify-content-center mx-auto fw-bold" align="center">
-                    <button type="button" class="btn btn-outline-secondary mt-4 p-2 fw-bold" id="sql">Hasil SQL Injection</button>
-                    <button type="button" class="btn btn-outline-secondary mt-4 p-2 fw-bold" id="nmap">Hasil Scan Nmap</button>
-                    <button type="button" class="btn btn-outline-secondary mt-4 p-2 fw-bold" id="whois">Hasil WhoIs</button>
+                    <button type="button" class="btn btn-outline-secondary mt-4 p-2 fw-bold" id="sql" data-url="sqlmap/index.php">Hasil SQL Injection</button>
+                    <button type="button" class="btn btn-outline-secondary mt-4 p-2 fw-bold" id="nmap" data-url="nmap/index.php">Hasil Scan Nmap</button>
+                    <button type="button" class="btn btn-outline-secondary mt-4 p-2 fw-bold" id="whois" data-url="whois/whois.php">Hasil WhoIs</button>
                     </div>
 
                     <div class="row col-8 justify-content-center mx-auto fw-bold" id="isi">
@@ -53,36 +67,36 @@
         $(document).ready(function(){
             $('#input').focus();
 
-            $('#whois').click(function(){
-                var input = $('#input').val();
-                $('#loading').show();
+            $('input').keypress(function(e) {
+                if (e.which === 13) { 
+                e.preventDefault();
+                $('button').addClass('shake');
 
-                $.ajax({
-					type: 'POST',
-					url: "whois/whois.php",
-					data: {'domain':input},
-					success: function(response) {
-                        $('#isi').html(response);
-					},
-                    complete: function(){
-                        $('#loading').hide();
-                        $('html, body').animate({
-                            scrollTop: $("#isi").offset().top
-                        }, 0);
-
-                        var audio = $("#audio")[0];
-                        audio.play();
-                    },
-				});
+                setTimeout(function() {
+                    $('button').removeClass('shake');
+                }, 500);
+                }
             });
 
-            $('#nmap').click(function(){
+            $('button').click(function(){
+                var url = $(this).data('url');
+                var buttonId = $(this).attr('id');
+
                 var input = $('#input').val();
+                
+                if (input=='') {
+                    toastr.warning("Masukkan URL lebih dulu");
+                    return;
+                }
+
                 $('#loading').show();
+                $("html, body").animate({
+                    scrollTop: 0
+                }, 0);
 
                 $.ajax({
 					type: 'POST',
-					url: "nmap/index.php",
+					url: url,
 					data: {'domain':input},
 					success: function(response) {
                         $('#isi').html(response);
@@ -94,28 +108,10 @@
                         }, 0);
                         var audio = $("#audio")[0];
                         audio.play();
+                        toastr.success("Data selesai dimuat");
                     },
-				});
-            });
-
-            $('#sql').click(function(){
-                var input = $('#input').val();
-                $('#loading').show();
-
-                $.ajax({
-					type: 'POST',
-					url: "sqlmap/index.php",
-					data: {'domain':input},
-					success: function(response) {
-                        $('#isi').html(response);
-					},
-                    complete: function(){
-                        $('#loading').hide();
-                        $('html, body').animate({
-                            scrollTop: $("#isi").offset().top
-                        }, 0);
-                        var audio = $("#audio")[0];
-                        audio.play();
+                    error: function(xhr, status, error) {
+                        toastr.error("Eror Internal Server");
                     },
 				});
             });

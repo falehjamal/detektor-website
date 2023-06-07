@@ -1,5 +1,9 @@
 <?php
-// $t = '"C:\laragon\bin\python\python-3.10\python.exe" "C:\laragon\www\whois\sqlmap\sqlmap.py" -u jalakencana.id';
+$domain = $_POST['domain'];
+$cmd = 'echo Y | "C:\laragon\bin\python\python-3.10\python.exe" "C:\laragon\www\whois\sqlmap\sqlmap.py" -u '.$domain.' --batch --banner';
+
+$res = shell_exec($cmd);
+$rentan = "";
 ?>
 
 
@@ -15,18 +19,29 @@
 
 <div class="uk-container uk-container-small" style="margin-top: 30px">
     <h1>Hasil SQL Injection</h1>
-        <div class="uk-margin">
+        <div class="uk-margin <?= strpos($res, "do not appear to be injectable") == true ? "border border-success" : "border border-danger"  ?>">
             <input class="uk-input" type="text" aria-label="Input" autocomplete="off" name="domain" value="URL : <?=$_POST['domain']?>" disabled>
         </div>
-    <div class="uk-margin">
-        <?php
-        $domain = $_POST['domain'];
-        // $cmd = 'echo Y | "C:\laragon\bin\python\python-3.10\python.exe" "C:\laragon\www\whois\sqlmap\sqlmap.py" -u '.$domain;
-        $cmd = 'echo Y | "C:\laragon\bin\python\python-3.10\python.exe" "C:\laragon\www\whois\sqlmap\sqlmap.py" -u '.$domain.' --batch --banner';
+    <div class="uk-margin <?= strpos($res, "do not appear to be injectable") == true ? "border border-success" : "border border-danger"  ?>">
 
-        $res = shell_exec($cmd);
-        echo "<pre>$res</pre>";
+
+        <?php
+        
+        if (strpos($res, "do not appear to be injectable") == true) {
+            $rentan =  "<span class='text-success'>WEBSITE TIDAK RENTAN</span>";
+            
+        }else{
+            $rentan = "<span class='text-danger pb-3'>WEBSITE RENTAN</span>";
+        }
+        
+        echo "<pre>$res Status : $rentan</pre>";
+
+        
 
         ?>
+
+    
+    
+
     </div>
 </div>
