@@ -1,5 +1,6 @@
 <?php
 $domain = $_POST['domain'];
+// $domain = 'jalakencana.id';
 $cmd = 'echo Y | "C:\laragon\bin\python\python-3.10\python.exe" "C:\laragon\www\whois\sqlmap\sqlmap.py" -u '.$domain.' --batch --banner';
 
 $res = shell_exec($cmd);
@@ -28,13 +29,13 @@ $rentan = "";
         <?php
         
         if (strpos($res, "do not appear to be injectable") == true) {
-            $rentan =  "<span class='text-success'>WEBSITE TIDAK RENTAN</span>";
+            $rentan =  "<span class='alert alert-success'>Status : WEBSITE TIDAK RENTAN</span>";
             
         }else{
-            $rentan = "<span class='text-danger pb-3'>WEBSITE RENTAN</span>";
+            $rentan = "<span class='alert alert-danger pb-3'>Status : WEBSITE RENTAN</span>";
         }
+        echo "<pre>$res</pre>";
         
-        echo "<pre>$res Status : $rentan</pre>";
 
         
 
@@ -43,5 +44,10 @@ $rentan = "";
     
     
 
+    </div>
+    <div class="row">
+        <?php 
+            echo $rentan;
+        ?>
     </div>
 </div>
